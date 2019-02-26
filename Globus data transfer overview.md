@@ -21,7 +21,7 @@ USAGE:
 
 WEIRD CODE THINGS, for future work on this/other Globus scripts:
 * Instead of recursively copying from all of the MSD folders, I go into each MSD folder, and then add each file to the TransferData list. I did this so I could scan filenames and skip the invisible files (ie .Spotlight)
-* When specifying the path of local files/directories to be copied, you’ll get a permission error unless you have the FULL path included in the Globus API add_item() function. Ie Users/kitzeslab/Desktop, not ~/Desktop. It doesn’t mind relative paths on the Globus side, though (~/ibwo_data is fine)
+* When specifying the path of local files/directories to be copied, you’ll get a permission error unless you have the FULL path included in the Globus API add_item() function. Ie Users/kitzeslab/Desktop, not \~ /Desktop. It doesn’t mind relative paths on the Globus side, though (\~/ibwo_data is fine)
 * “Recursively” copying directory /Foo/ will only recursively copy what’s inside /Foo/. I got around this by starting in /Volumes and recursively copying directories that begin with the prefix ‘MSD’. If SD files are ever named something else, changing the sd_prefix variable will handle the new names.
 * Globus will transfer a single symlinked file, but if you ask it to recursively transfer a symlink directory, it’ll just make an empty folder of the root name and not continue transferring further down the line.
 
