@@ -7,7 +7,7 @@ import datetime
 #usage: python globus_sd_transfer.py
 
 
-sd_prefix = 'MSD'
+sd_prefix = ['MSD', 'MDS', 'DMS', 'DSM', 'SDM', 'SMD'] # covering all our bases
 sd_mount = '/Volumes'
 now = datetime.datetime.now()
 current_date = '_' + str(now.month) + '-' + str(now.day) + '-' + str(now.year)
@@ -41,15 +41,17 @@ tdata = globus_sdk.TransferData(tc, MYENDPOINT_ID, PITTDTN_ID, label="", sync_le
 #TODO: verify_checksum might create a bottleneck, but seems like a good idea
 
 disks = os.listdir(path=sd_mount)					# SD cards mount to /Volumes on Mac
-for disk in disks:
-	if bool(re.search(sd_prefix, disk)):			# iterate thru SD cards
-		new_folder = '/~/ibwo_data/'+str(disk + current_date)
-		sd_fullpath = sd_mount+'/' + disk
-		tc.operation_mkdir(PITTDTN_ID, path=new_folder) # new directory in ~/ibwo for each SD
-		files = os.listdir(path=sd_fullpath)
-		for file in files:
-			if not (bool(re.match("^\.",file))): # ignore hidden files
-				tdata.add_item(sd_fullpath+'/'+file, new_folder+'/'+file) # copy from SD to new Globus dir
+for d in disks:
+	disk = d.upper() # guard against accidental bad naming
+	for i in range(len(sd_prefix)):
+		if bool(re.search(sd_prefix[i], disk)):			# iterate thru SD cards
+			new_folder = '/~/ibwo_data/'+str(disk + current_date)
+			sd_fullpath = sd_mount+'/' + disk
+			tc.operation_mkdir(PITTDTN_ID, path=new_folder) # new directory in ~/ibwo for each SD
+			files = os.listdir(path=sd_fullpath)
+			for file in files:
+				if not (bool(re.match("^\.",file))): # ignore hidden files
+					tdata.add_item(sd_fullpath+'/'+file, new_folder+'/'+file) # copy from SD to new Globus dir
 
 transfer_result = tc.submit_transfer(tdata)
 print("task_id =", transfer_result["task_id"])
