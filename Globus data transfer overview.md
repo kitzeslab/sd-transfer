@@ -10,7 +10,7 @@ SETUP:
         2. Endpoint ID (your account) - log into Globus.org with your Pitt info, go to Endpoints/[you], and copy the UUID into _line 15_
         3. pitt#dtn ID (where the data is going). Barry set up a symlink in the home directory of pitt#dtn (~/ibwo_data) for us to send this data to the Cluster.
 * Check that _line 10_ has the correct path to where the SDs mount (on Mac it’s /Volumes)
-* Give Globus access to SD cards - Create a symlink to /Volumes (ie symlink /Volumes ~/Desktop/volsym), then open Globus Connect Personal preferences (click the ‘g’ bubble in the top bar by wifi, for Mac), and make the symlink Sharable in the Access tab
+* Give Globus access to SD cards - Create a symlink to /Volumes (eg `ln -s /Volumes ~/Desktop/volsym`), then open Globus Connect Personal preferences (click the ‘g’ bubble in the top bar by wifi, for Mac), and make the symlink Sharable in the Access tab
 * Install Globus python SDK: 'pip install globus-sdk'
 
 USAGE:
