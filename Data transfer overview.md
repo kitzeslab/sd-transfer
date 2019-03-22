@@ -1,4 +1,4 @@
-README for use of sd-transfer.py
+sd-transfer.py
 Trieste Devlin, the Kitzes Lab, University of Pittsburgh, 03-2019
 
 This script can finds all SD cards named with a specified list of 1+ prefixes (ours are all called 'MSD-001', 'MSD-002, etc), and copy all of the files contained to the local or Globus cloud destination of your choice. The contents of each file is placed in its own folder with file structure and original write times maintained in the copies. A checksum is performed on each file to confirm successful transfer. There is the option to delete files from the SDs after successful transfer.
