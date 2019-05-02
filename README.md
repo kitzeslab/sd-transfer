@@ -38,14 +38,15 @@ ARGUMENTS:
                           this flag is included. [Optional]
 ```
 
-# Local Example
-   copyfiles.py -p MSD -l ~/Desktop/SD_folder -d 
+# Examples
+```
+copyfiles.py -p MSD -l ~/Desktop/SD_folder -d 
      # copy the contents of SD cards with names prefixed by "MSD" to "SD_folder" on your Desktop, then delete files from SDs
    
-   copyfiles.py -p SD BobsData -g fieldData/sdTransfer
+copyfiles.py -p SD BobsData -g fieldData/sdTransfer
      # copy the contents of SD cards with names prefixed by "SD" or "BobsData" to the folder "fieldData/sdTransfer" in your
      # Globus Personal Endpoint filesystem, leaving the contents of the SD cards alone
-
+```
 
 
 
