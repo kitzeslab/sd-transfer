@@ -79,7 +79,7 @@ def globus_upload(sd_p, sd_mount, upload_dir, delete_choice):
 	sd_prefix = sd_p # a list of 1+ is passed
 	# sd_prefix.append(sd_p)
 	if sd_prefix[0] == 'MSD':
-		sd_prefix.extend(['MDS', 'DMS', 'DSM', 'SDM', 'SMD'])
+		sd_prefix.extend(['MDS', 'DMS', 'DSM', 'SDM', 'SMD', 'MS', 'MD'])
 		# for kitzeslab naming conventions: covering all our bases in case a card name was mistyped
 	now = datetime.datetime.now()
 	current_date = '_' + str(now.month) + '-' + str(now.day) + '-' + str(now.year)
