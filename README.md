@@ -11,7 +11,7 @@ Note that this code is designed for use on Mac - some changes are necessary to r
 
 # Usage
 ```
-USAGE: copyfiles.py [-h] -p PREFIX -m MOUNTPATH -l LOCAL [-g GLOBUS] [-d]
+USAGE: python sd-transfer.py [-h] -p PREFIX -m MOUNTPATH -l LOCAL [-g GLOBUS] [-d]
 
 ARGUMENTS:
 
