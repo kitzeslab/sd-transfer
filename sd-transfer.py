@@ -213,7 +213,7 @@ parser.add_argument("-l", "--local", default='0', help="New local directory name
 parser.add_argument("-g", "--globus", help="New directory name (with absolute path) in your Globus filesystem to upload data to.[Required for local Globus transfer]")
 parser.add_argument("-d", "--delete", action='store_true', help="Delete files from SD cards after transfer and confirmation are complete. Files are only deleted if this flag is included. [Optional]")
 parser.add_argument("-r", "--reformat", action='store_true', help="Reformat SD card to FAT32, maintaining its name. WARNING: all data will be deleted during reformat, even if you didn't specify the -d flag (defaults to not reformat). To reformat but not transfer any data, use -l 0 -g 0 -r. [Optional]")
-parser.add_argument("-u", "--unmount", action='store_true', help="Unmount SD cards from your computer after done with local copy or reformat. Don't use this for Globus upload!")
+parser.add_argument("-u", "--unmount", action='store_true', help="Unmount SD cards from your computer after done with local copy or reformat. Don't use this for Globus upload! [Optional]")
 parser.add_argument("-y", "--yes", action='store_true', help="Include this flag if you want to force deletion or reformatting without typing Y in the menu [Optional]")
 
 args = parser.parse_args()
