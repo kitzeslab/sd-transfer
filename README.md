@@ -3,7 +3,7 @@ Trieste Devlin, the Kitzes Lab, University of Pittsburgh, 03-2019
 
 # About
 
-This script finds all SD cards named with a specified list of 1+ prefixes (ours are all called 'MSD-001', 'MSD-002, etc), and copy all files contained to the local or Globus cloud destination of your choice. The contents of each drive is placed in its own folder with file structure and original write times maintained in the copies. A checksum is performed on each file to confirm successful transfer. There is the option to delete files from the SDs after successful transfer.
+This script finds all SD cards named with a specified list of 1+ prefixes (ours are all called 'MSD-001', 'MSD-002, etc), and copy all files contained to the local or Globus cloud destination of your choice. The contents of each drive is placed in its own folder with file structure and original write times maintained in the copies. A checksum is performed on each file to confirm successful transfer. There is the option to simply delete files from the cards, delete and reformat the cards, and/or unmount cards after successsful transfer (if transferring). To reformat cards without any data transfer, simply use the -r flag without -l or -g.
 
 Local usage is as simple as running as specified below with the -l flag. See below for Globus setup details, as there are a few changes you need to make in the python code to get synced up with your account.
 
@@ -11,41 +11,57 @@ Note that this code is designed for use on Mac - some changes are necessary to r
 
 # Usage
 ```
-USAGE: python sd-transfer.py [-h] -p PREFIX -m MOUNTPATH -l LOCAL [-g GLOBUS] [-d]
+sd-transfer.py [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] [-l LOCAL]
+                      [-g GLOBUS] [-d] [-r] [-u] [-y]
 
-ARGUMENTS:
+Transfer files from SD card(s) to local storage or Globus cloud storage,
+and/or delete data or reformat SD card(s).
 
-    -h, --help            show this help message and exit
-
-    -p PREFIX, --prefix PREFIX
-                          Prefix(es) of all your SD cards' names. Enter multiple
-                          prefixes separated by spaces to indicate a range of
-                          prefixed names. [Required]
-
-    -m MOUNTPATH, --mountPath MOUNTPATH
-                          The path to where SD cards mount on this computer
-                          (defaults to Mac's mountpoint: /Volumes). [Optional]
-
-    -l LOCAL, --local LOCAL
-                          New local directory (with path) to save data to. [Required for local transfer]
-
-    -g GLOBUS, --globus GLOBUS
-                          New directory name (with absolute path) to upload data to in your
-                          Globus personal endpoint filesystem. [Required for Globus transfer]
-
-    -d, --delete          Delete files from SD cards after transfer and
-                          confirmation are complete. Files are only deleted if
-                          this flag is included. [Optional]
+Arguments:
+  -h, --help            show this help message and exit
+  -p PREFIX [PREFIX ...], --prefix PREFIX [PREFIX ...]
+                        Prefix(es) of all your SD cards' names. Enter multiple
+                        prefixes separated by spaces to indicate a range of
+                        prefixed names. [Required]
+  -m MOUNTPATH, --mountPath MOUNTPATH
+                        The path to where SD cards mount on this computer
+                        (defaults to Mac's mountpoint: /Volumes). [Optional]
+  -l LOCAL, --local LOCAL
+                        New local directory name (with path) to save data to.
+                        [Required for local transfer]
+  -g GLOBUS, --globus GLOBUS
+                        New directory name (with absolute path) in your Globus
+                        filesystem to upload data to.[Required for local
+                        Globus transfer]
+  -d, --delete          Delete files from SD cards after transfer and
+                        confirmation are complete. Files are only deleted if
+                        this flag is included. [Optional]
+  -r, --reformat        Reformat SD card to FAT32, maintaining its name.
+                        WARNING: all data will be deleted during reformat,
+                        even if you didn't specify the -d flag (defaults to
+                        not reformat). To reformat but not transfer any data,
+                        use -l 0 -g 0 -r. [Optional]
+  -u, --unmount         Unmount SD cards from your computer after done with
+                        local copy or reformat. Don't use this for Globus
+                        upload! [Optional]
+  -y, --yes             Include this flag if you want to force deletion or
+                        reformatting without typing Y in the menu [Optional]
 ```
 
 # Examples
 ```
 python sd-transfer.py -p MSD -l ~/Desktop/SD_folder -d 
-     # copy the contents of SD cards with names prefixed by "MSD" to "SD_folder" on your Desktop, then delete files from SDs
-   
+     # Copy the contents of SD cards with names prefixed by "MSD" to "SD_folder" on your Desktop, then delete files from SDs after asking for delete confirmation.
+
+python sd-transfer.py -p MSD -l ~/Desktop/SD_folder -r -y -u   
+     # Same as above, but erase and reformat cards when finished (skip confirmation), then unmount.
+
 python sd-transfer.py -p SD BobsData -g fieldData/sdTransfer
-     # copy the contents of SD cards with names prefixed by "SD" or "BobsData" to the folder "fieldData/sdTransfer" in your
+     # Copy the contents of SD cards with names prefixed by "SD" or "BobsData" to the folder "fieldData/sdTransfer" in your
      # Globus Personal Endpoint filesystem, leaving the contents of the SD cards alone
+
+python sd-transfer.py -p fieldData -r -u -y
+     # Erase and reformat SD cards with names prefixed by "fieldData" (skip confirmation). Don't save any data, but keep the card names as they were. Unmount when finished.
 ```
 
 
@@ -74,3 +90,4 @@ python sd-transfer.py -p SD BobsData -g fieldData/sdTransfer
 * When specifying the path of local files/directories to be copied from the Globus side, you’ll get a permission error unless you have the FULL path included in the Globus API add_item() function. Ie Users/me/Desktop, not \~ /Desktop. It doesn’t mind relative paths on the Globus side, though (\~/ibwo_data is fine). This is reversed for input on the local side - don't give it a relative Globus filepath.
 * “Recursively” copying directory /Foo/ will only recursively copy what’s inside /Foo/. I got around this by starting in /Volumes and recursively copying directories that begin with the one of the specified prefixes.
 * Globus will transfer a single symlinked file, but if you ask it to recursively transfer a symlink directory, it’ll just make an empty folder of the root name and not continue transferring further down the line. I thought this would be a brilliant way to recursively copy from every SD at once, but alas it had to be more complicated than that.
+
