@@ -64,7 +64,7 @@ def transfer_folder_contents(dst_path, sd_src_path, delete_choice):
 def local_transfer(sd_prefix, sd_mount, local_path, delete_choice, reformat_choice, unmount_choice):
 	# sd_prefix # a list of 1+ is passed
 	if sd_prefix[0] == 'MSD':
-		sd_prefix.extend(['MDS', 'DMS', 'DSM', 'SDM', 'SMD']) # account for naming errors
+		sd_prefix.extend(['MDS', 'DMS', 'DSM', 'SDM', 'SMD', 'MS', 'MSD']) # account for naming errors
 #	now = datetime.datetime.now()
 #	current_date = '_' + str(now.month) + '-' + str(now.day) + '-' + str(now.year)
 	
