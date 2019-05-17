@@ -59,28 +59,45 @@ def transfer_folder_contents(dst_path, sd_src_path, delete_choice):
 					transfer_folder_contents(local_subpath, sd_subpath, delete_choice)#, local)
 				else: # bottom of the line. Copy file
 					copyfile_local(file, sd_src_path, dst_path, delete_choice)
+def get_disks(sd_prefix, sd_mount):
+	'''
+	Get list of disks matching prefix
+	
+	Inputs: 
+		sd_prefix: user-specified list of sd card prefixes to use
+		sd_mount: mount point for SD cards
+	
+	Returns a list of disks matching prefix
+	'''
+
+	# Account for naming errors (Kitzes Lab convention)
+	if sd_prefix[0] == 'MSD':
+                sd_prefix.extend(['MS', 'MD', 'DMS', 'DSM', 'SDM', 'SMD'])
+
+	# Get list of disks matching prefix
+	disks = os.listdir(path=sd_mount) # SD cards mount to /Volumes on Mac
+	matching_disks = [disk for disk in disks if disk.startswith(tuple(sd_prefix))]
+	print(f'     Transferring files from {len(matching_disks)} disks')
+	return matching_disks 	
 
 
 def local_transfer(sd_prefix, sd_mount, local_path, delete_choice, reformat_choice, unmount_choice):
-	# sd_prefix # a list of 1+ is passed
-	if sd_prefix[0] == 'MSD':
-		sd_prefix.extend(['MDS', 'DMS', 'DSM', 'SDM', 'SMD']) # account for naming errors
-#	now = datetime.datetime.now()
-#	current_date = '_' + str(now.month) + '-' + str(now.day) + '-' + str(now.year)
+	# Get list of disks matching prefixes
+	matching_disks = get_disks(sd_prefix, sd_mount)
+
+	# Transfer contents of all matching disks
+	for disk in matching_disks:
+		folder_name = str(disk)# + current_date)
+		sd_fullpath = sd_mount + '/' + disk
+		local_fullpath = os.path.join(local_path, folder_name)
+
+		transfer_folder_contents(local_fullpath, sd_fullpath, delete_choice)#, 1)
+
+		print('\n     Files from ' + disk + ' copied to ' + local_fullpath + '.')
 	
-	disks = os.listdir(path=sd_mount) # SD cards mount to /Volumes on Mac
-	for disk in disks:
-		for i in range(len(sd_prefix)): # ignore hidden files, ie ".Spotlight-V100"
-			if bool(re.search(sd_prefix[i], disk)):			# iterate thru SD cards
-				folder_name = str(disk)# + current_date)
-				sd_fullpath = sd_mount + '/' + disk
-				local_fullpath = local_path + '/' + folder_name
-
-				transfer_folder_contents(local_fullpath, sd_fullpath, delete_choice)#, 1)
-
-				print('\n     Files from ' + disk + ' copied to ' + local_fullpath + '.')
 	if(reformat_choice):
 		reformat_SDs_FAT32(sd_prefix)
+	
 	if(unmount_choice):
 		unmount_SDs(sd_prefix)
 
@@ -88,14 +105,6 @@ def local_transfer(sd_prefix, sd_mount, local_path, delete_choice, reformat_choi
 def globus_upload(sd_p, sd_mount, upload_dir, delete_choice, reformat_choice):
 	import globus_sdk
 	#only import if user needs - this will slow things down very slightly for Globus users, but save time for local users
-
-	sd_prefix = sd_p # a list of 1+ is passed
-	# sd_prefix.append(sd_p)
-	if sd_prefix[0] == 'MSD':
-		sd_prefix.extend(['MDS', 'DMS', 'DSM', 'SDM', 'SMD'])
-		# for kitzeslab naming conventions: covering all our bases in case a card name was mistyped
-#	now = datetime.datetime.now()
-#	current_date = '_' + str(now.month) + '-' + str(now.day) + '-' + str(now.year)
 
 	CLIENT_ID = '' # app
 	MYENDPOINT_ID = '' # UUID
@@ -129,22 +138,22 @@ def globus_upload(sd_p, sd_mount, upload_dir, delete_choice, reformat_choice):
 	tc.operation_mkdir(DTN_ID, path=upload_dir) # new directory in ~/ibwo for each SD
 	# you will error out if you specified a directory that already exists
 
-	disks = os.listdir(path=sd_mount)					# SD cards mount to /Volumes on Mac
-	for d in disks:
-		disk = d.upper() # guard against accidental bad naming
-		for i in range(len(sd_prefix)):
-			if bool(re.search(sd_prefix[i], disk)):			# iterate thru SD cards
-				new_folder = upload_dir + '/' + str(disk)# + current_date)
-				sd_fullpath = sd_mount+'/' + disk
-				tc.operation_mkdir(DTN_ID, path=new_folder) # new directory in indicated directory for each SD
+	# Get list of disks matching prefixes
+	matching_disks = get_disks(sd_prefix, sd_mount)
 
-				files = os.listdir(path=sd_fullpath)
-				for file in files:
-					if not file.startswith("."): #ignore hidden files
-						if os.path.isdir(sd_fullpath + '/' + file): #recursively copy nested folders
-							tdata.add_item(sd_fullpath+ '/' +file, new_folder+'/'+file, recursive=True)
-						else:
-							tdata.add_item(sd_fullpath+'/'+file, new_folder+'/'+file) # copy from SD to new Globus dir
+        # Upload contents of all matching disks
+	for d in matching_disks:
+		new_folder = upload_dir + '/' + str(disk)# + current_date)
+		sd_fullpath = sd_mount+'/' + disk
+		tc.operation_mkdir(DTN_ID, path=new_folder) # new directory in indicated directory for each SD
+
+		files = os.listdir(path=sd_fullpath)
+		for file in files:
+			if not file.startswith("."): #ignore hidden files
+				if os.path.isdir(sd_fullpath + '/' + file): #recursively copy nested folders
+					tdata.add_item(sd_fullpath+ '/' +file, new_folder+'/'+file, recursive=True)
+				else:
+					tdata.add_item(sd_fullpath+'/'+file, new_folder+'/'+file) # copy from SD to new Globus dir
 
 	transfer_result = tc.submit_transfer(tdata)
 	print("Globus task_id =", transfer_result["task_id"])
