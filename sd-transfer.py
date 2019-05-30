@@ -80,7 +80,7 @@ def transfer_folder_contents(dst_path, sd_src_path, delete_choice):
 					sd_subpath = f"{sd_src_path}/{str(file)}"
 					transfer_folder_contents(local_subpath, sd_subpath, delete_choice)#, local)
 				else: # bottom of the line. Copy file
-					copyfile_local(file, sd_src_path, dst_path, delete_choice)
+					copyfile_local(file, sd_src_path, dst_path.replace, delete_choice)
 
 def get_disks(sd_prefix, sd_mount):
 	'''
@@ -111,11 +111,11 @@ def local_transfer(sd_prefix, sd_mount, local_path, delete_choice, reformat_choi
 
 	# Transfer contents of all matching disks
 	for disk in matching_disks:
-		folder_name = str(disk)# + current_date)
-		sd_fullpath = f"{sd_mount}/{disk}"
+		folder_name = str(disk)
+		sd_fullpath = f"{sd_mount}/{str(disk)}"
 		local_fullpath = os.path.join(local_path, folder_name)
 
-		transfer_folder_contents(local_fullpath, sd_fullpath, delete_choice)
+		transfer_folder_contents(local_fullpath.replace(" ", "\ "), sd_fullpath.replace(" ", "\ "), delete_choice)
 		print(f"          Files from {disk} copied to {local_fullpath}.")
 	
 	if reformat_choice:
@@ -165,7 +165,7 @@ def globus_upload(sd_p, sd_mount, upload_dir, delete_choice, reformat_choice):
 	matching_disks = get_disks(sd_prefix, sd_mount)
 
         # Upload contents of all matching disks
-	for d in matching_disks:
+	for disk in matching_disks:
 		new_folder = f"{upload_dir}/{str(disk)}"
 		sd_fullpath = f"{sd_mount}/{disk}"
 		tc.operation_mkdir(DTN_ID, path=new_folder) # new directory in indicated directory for each SD
