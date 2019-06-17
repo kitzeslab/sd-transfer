@@ -1,17 +1,20 @@
 # sd-transfer.py
-Trieste Devlin, the Kitzes Lab, University of Pittsburgh, 03-2019
+Trieste Devlin, the Kitzes Lab, University of Pittsburgh
+Last update: 06-17-2019
 
 # About
 
 This script finds all SD cards named with a specified list of 1+ prefixes (ours are all called 'MSD-001', 'MSD-002, etc), and copy all files contained to the local or Globus cloud destination of your choice. The contents of each drive is placed in its own folder with file structure and original write times maintained in the copies. A checksum is performed on each file to confirm successful transfer. There is the option to simply delete files from the cards, delete and reformat the cards, and/or unmount cards after successsful transfer (if transferring). To reformat cards without any data transfer, simply use the -r flag without -l or -g.
 
-Local usage is as simple as running as specified below with the -l flag. See below for Globus setup details, as there are a few changes you need to make in the python code to get synced up with your account.
+# Installation and Basic Info:
 
-Note that this code is designed for use on Mac - some changes are necessary to run on another OS. Hope this is useful!
+On the Github webpage for this script, copy the git URL using the green *Clone or Download* button. Then, in Terminal, navigate to the location in your filesystem where you'd like the script to be saved and run "git clone <copied url>". Once the download is complete, you can run the script by typing "python sd-transfer.py " followed by the flags and arguments indicating what exactly you want it to do and where you want the data to be saved. In the **Usage** section below, optional inputs are shown in brackets. See examples below for specific commands to run for different results. Run "python sd-transfer.py -h" to get a printout of the **Usage** section to the command-line as a reminder.
+
+Local usage is as simple as running as specified below with the -l flag. See below for Globus setup details, as there are a few changes you need to make in the python code to get synced up with your account. Note that this code is designed for use on Mac - some changes are necessary to run on another OS. Hope this is useful!
 
 # Usage
 ```
-sd-transfer.py [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] [-l LOCAL]
+python sd-transfer.py [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] -l LOCAL
                       [-g GLOBUS] [-d] [-r] [-u] [-y]
 
 Transfer files from SD card(s) to local storage or Globus cloud storage,
