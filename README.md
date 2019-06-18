@@ -12,6 +12,8 @@ On the Github webpage for this script, copy the git URL using the green *Clone o
 
 Local usage is as simple as running as specified below with the ```-l [folder-name]``` flag. If the folder you include doesn't exist yet, it will be created. If you just include a folder name, it'll be created in the current directory. If you include a path and a name, you can specify the location of where to save the data on your computer (ie ```-l /Users/[you]/Desktop/[folder-name]```). Note: the command ```pwd``` will print the full path of your current directory in the terminal. See below for Globus setup details, as there are a few changes you need to make in the python code to get synced up with your account. Note that this code is designed for use on Mac - some changes are necessary to run on another OS. Hope this is useful!
 
+Right now, the script isn't able to handle folder names containing spaces (filenames with spaces are ok though). This will be fixed very soon.
+
 
 # Usage
 ```
