@@ -8,9 +8,10 @@ This script finds all SD cards named with a specified list of 1+ prefixes (ours 
 
 # Installation and Basic Info:
 
-On the Github webpage for this script, copy the git URL using the green *Clone or Download* button. Then, in Terminal, navigate to the location in your filesystem where you'd like the script to be saved and run "git clone \[copied url\]". Once the download is complete, you can run the script by typing "python sd-transfer.py " followed by the flags and arguments indicating what exactly you want it to do and where you want the data to be saved. In the **Usage** section below, optional inputs are shown in brackets. See examples below for specific commands to run for different results. Run "python sd-transfer.py -h" to get a printout of the **Usage** section to the command-line as a reminder.
+On the Github webpage for this script, copy the git URL using the green *Clone or Download* button. Then, in Terminal, navigate to the location in your filesystem where you'd like the script to be saved and run ```git clone \[paste URL\]```. If you get a git error along the lines of *"The command-line developer tools need to be installed"*, follow the instructions printed with that error to get the tools installed on your computer. Once the download is complete, navigate into the folder that was just created (```cd sd-transfer```), then you can run the script by running the command ```python sd-transfer.py ..``` with the flags and arguments indicating what exactly you want it to do and where you want the data to be saved. In the **Usage** section below, optional inputs are shown in brackets - but you need to at least specify a prefix so the program knows what cards to read from and either a local or Globus transfer flag with a destination folder name (```-l [name]``` or ```-g```). See the **Examples** section below for specific commands to run for various results. Run "python sd-transfer.py -h" to get a printout of the **Usage** section to the terminal as a reminder.
 
-Local usage is as simple as running as specified below with the -l flag. See below for Globus setup details, as there are a few changes you need to make in the python code to get synced up with your account. Note that this code is designed for use on Mac - some changes are necessary to run on another OS. Hope this is useful!
+Local usage is as simple as running as specified below with the ```-l [folder-name]``` flag. If the folder you include doesn't exist yet, it will be created. If you just include a folder name, it'll be created in the current directory. If you include a path and a name, you can specify the location of where to save the data on your computer (ie ```-l /Users/[you]/Desktop/[folder-name]```). See below for Globus setup details, as there are a few changes you need to make in the python code to get synced up with your account. Note that this code is designed for use on Mac - some changes are necessary to run on another OS. Hope this is useful!
+
 
 # Usage
 ```
@@ -51,6 +52,7 @@ Arguments:
                         reformatting without typing Y in the menu [Optional]
 ```
 
+
 # Examples
 ```
 python sd-transfer.py -p MSD -l ~/Desktop/SD_folder -d 
@@ -59,12 +61,12 @@ python sd-transfer.py -p MSD -l ~/Desktop/SD_folder -d
 python sd-transfer.py -p MSD -l ~/Desktop/SD_folder -r -y -u   
      # Same as above, but erase and reformat cards when finished (skip confirmation), then unmount.
 
+python sd-transfer.py -p fieldData -r -u -y
+     # Erase and reformat SD cards with names prefixed by "fieldData" (skip confirmation). Don't save any data, but keep the card names as they were. Unmount when finished.
+
 python sd-transfer.py -p SD BobsData -g fieldData/sdTransfer
      # Copy the contents of SD cards with names prefixed by "SD" or "BobsData" to the folder "fieldData/sdTransfer" in your
      # Globus Personal Endpoint filesystem, leaving the contents of the SD cards alone
-
-python sd-transfer.py -p fieldData -r -u -y
-     # Erase and reformat SD cards with names prefixed by "fieldData" (skip confirmation). Don't save any data, but keep the card names as they were. Unmount when finished.
 ```
 
 
@@ -89,8 +91,9 @@ python sd-transfer.py -p fieldData -r -u -y
 * Copy Native App Authorization Code, paste into commandline
 
 
-# Weird Code Things, for future reference on this/other Globus scripts:
-* When specifying the path of local files/directories to be copied from the Globus side, you’ll get a permission error unless you have the FULL path included in the Globus API add_item() function. Ie Users/me/Desktop, not \~ /Desktop. It doesn’t mind relative paths on the Globus side, though (\~/ibwo_data is fine). This is reversed for input on the local side - don't give it a relative Globus filepath.
-* “Recursively” copying directory /Foo/ will only recursively copy what’s inside /Foo/. I got around this by starting in /Volumes and recursively copying directories that begin with the one of the specified prefixes.
-* Globus will transfer a single symlinked file, but if you ask it to recursively transfer a symlink directory, it’ll just make an empty folder of the root name and not continue transferring further down the line. I thought this would be a brilliant way to recursively copy from every SD at once, but alas it had to be more complicated than that.
 
+# Globus Code Things, for future reference on this/other scripts:
+
+* When specifying the path of local files/directories to be copied from the Globus side, you’ll get a permission error unless you have the FULL path included in the Globus API add_item() function. Ie ```Users/me/Desktop```, not ```\~ /Desktop```. It doesn’t mind relative paths on the Globus side, though (```\~/folder``` is fine). This is reversed for input on the local side - don't give it a relative Globus filepath.
+* “Recursively” copying directory ```/Foo/``` will only recursively copy what’s *inside* ```/Foo/```. I got around this by starting in ```/Volumes``` and recursively copying directories that begin with the one of the specified prefixes.
+* Globus will transfer a single symlinked file, but if you ask it to recursively transfer a symlink directory, it’ll just make an empty folder of the root name and not continue transferring further down the line. I thought this would be a brilliant way to recursively copy from every SD at once, but alas it had to be more complicated than that.
