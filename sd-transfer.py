@@ -62,18 +62,18 @@ def copyfile_local(fname, srcpath, dstpath, delete_choice):
 				os.remove(srcpath + "/" + fname)  #f"{srcpath}/{fname}")
 
 
-def transfer_folder_contents(dst_path, sd_src_path, delete_choice): 
+def transfer_folder_contents(dst_path, sd_src_path, delete_choice):
 	if not os.path.isdir(dst_path):
 		os.makedirs(dst_path, mode=0o777) # make directory with folders inside for each disk (or subdirectory)
 
 		files = os.listdir(path=sd_src_path)
 		for file in files:
 			if not file.startswith("."): #ignore hidden files
-				# print(sd_src_path + '/' + file)
-				if os.path.isdir(sd_src_path + "/" + file  )#f"{sd_src_path}/{file}"): #recursively copy nested folders
+				if os.path.isdir(sd_src_path + "/" + file):
+				# if os.path.isdir(f"{sd_src_path}/{file}"): #recursively copy nested folders
 					# print(str(file) + ' is a directory.')
-					local_subpath = dst_path + "/" + str(file)  #f"{dst_path}/{str(file)}"
-					sd_subpath = sd_src_path + "/" + str(file) #f"{sd_src_path}/{str(file)}"
+					local_subpath = dst_path + "/" + file  #f"{dst_path}/{str(file)}"
+					sd_subpath = sd_src_path + "/" + file #f"{sd_src_path}/{str(file)}"
 					transfer_folder_contents(local_subpath, sd_subpath, delete_choice)#, local)
 				else: # bottom of the line. Copy file
 					copyfile_local(file, sd_src_path, dst_path, delete_choice)
@@ -97,7 +97,7 @@ def get_disks(sd_prefix, sd_mount):
 	disks = os.listdir(path=sd_mount) # SD cards mount to /Volumes on Mac
 	matching_disks = [disk for disk in disks if disk.startswith(tuple(sd_prefix))]
 	if args.local or args.globus:
-		print("     Transferring files from " + len(matching_disks) + " disks:\n")#f"     Transferring files from {len(matching_disks)} disks:\n")
+		print("     Transferring files from " + str(len(matching_disks)) + " disks:\n")#f"     Transferring files from {len(matching_disks)} disks:\n")
 	return matching_disks 	
 
 
@@ -169,7 +169,7 @@ def globus_upload(sd_p, sd_mount, upload_dir, delete_choice, reformat_choice):
 		files = os.listdir(path=sd_fullpath)
 		for file in files:
 			if not file.startswith("."): #ignore hidden files
-				if os.path.isdir(sd_fullpath + "/" + file)  #f"{sd_fullpath}/{file}"): #recursively copy nested folders
+				if os.path.isdir(sd_fullpath + "/" + file):  #f"{sd_fullpath}/{file}"): #recursively copy nested folders
 					tdata.add_item( sd_fullpath + "/" + file, new_folder + "/" + file, recursive=True)  #f"{sd_fullpath}/{file}", f"{new_folder}/{file}", recursive=True)
 				else:
 					tdata.add_item(sd_fullpath + "/" + file, new_folder + "/" + file)   #f"{sd_fullpath}/{file}", f"{new_folder}/{file}") # copy from SD to new Globus dir
@@ -299,7 +299,7 @@ if donemsg:
 	if not local:
 		print("\n     Globus transfer initiated.\n")
 	if args.local:
-		print("\n     Done with local transfer! Executed in " +  {str(time.time()-start)} + " seconds\n") #f"\n     Done with local transfer! Executed in {str(time.time()-start)} seconds\n")
+		print("\n     Done with local transfer! Executed in " +  str(time.time()-start) + " seconds\n") #f"\n     Done with local transfer! Executed in {str(time.time()-start)} seconds\n")
 	if args.reformat:
 		print("\n     Done with reformatting!\n")
 
