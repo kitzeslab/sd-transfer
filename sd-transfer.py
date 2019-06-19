@@ -11,7 +11,7 @@ def unmount_SDs(sd_prefix):
 	filename = "SDlist.txt"
 
 	for i in range(len(sd_prefix)):
-		cmd = f"diskutil list | grep {sd_prefix[i]} > {cwd}/{filename}"
+		cmd = "diskutil list | grep " + sd_prefix[i] + " > " + cwd + "/" + filename #f"diskutil list | grep {sd_prefix[i]} > {cwd}/{filename}"
 		subprocess.call(cmd,shell=True) # get disk info for mounted SDs with specified prefix using diskutil
 
 		if os.stat(filename).st_size != 0: # trying to read an empty file will throw an error
@@ -22,10 +22,10 @@ def unmount_SDs(sd_prefix):
 			names = lst["name"].values
 
 			for i in range(len(disks)): # reformat cards to clean FAT32 with original names
-				cmd = f"diskutil unmountDisk /dev/{disks[i][0:-2]}" # 'diskutil list' actually saves name like "disk2s2", so strip off last two characters
+				cmd = "diskutil unmountDisk /dev/" + disks[i][0:-2] #f"diskutil unmountDisk /dev/{disks[i][0:-2]}" # 'diskutil list' actually saves name like "disk2s2", so strip off last two characters
 				subprocess.call(cmd, shell=True)
 				
-	cmd = f"rm {cwd}/{filename}"
+	cmd = "rm " + cwd + "/" + filename #f"rm {cwd}/{filename}"
 	subprocess.call(cmd,shell=True) # delete SD reference file when done
 
 # calculate the md5 hash
@@ -42,24 +42,24 @@ def copyfile_local(fname, srcpath, dstpath, delete_choice):
 
 		fname_safe = fname.replace(" ", "_") # replace whitespace in filename with underscores, if there. 
 		if fname_safe != fname:
-			cmd = f"mv {srcpath}/\"{fname}\" {srcpath}/{fname_safe}"
+			cmd = "mv " + srcpath + "/'" + fname + "' " + srcpath + "/" + fname_safe   #f"mv {srcpath}/\"{fname}\" {srcpath}/{fname_safe}"
 			os.system(cmd)
 
 		fname = fname_safe
 
-		copied = f"{dstpath}/{fname}"
-		cmd = f"cp -p {srcpath}/{fname} {dstpath}"
+		copied = dstpath + "/" + fname  #f"{dstpath}/{fname}"
+		cmd = "cp -p " + srcpath + "/" + fname + " " + dstpath   #f"cp -p {srcpath}/{fname} {dstpath}"
 		os.system(cmd)
 
-		md5local = getlocalfile_md5(srcpath+'/' + fname) 	 				# get hash for original file
+		md5local = getlocalfile_md5(srcpath + '/' + fname) 	 				# get hash for original file
 		md5sd = getlocalfile_md5(copied)									# get hash for new local copy
 
 		if not (md5local == md5sd):
-			print (f"Oh no! Hash test failed for {dstpath}/{fname}. Trying again.") # if data copy doesn't match original, try again
+			print("Oh no! Hash test failed for " + dstpath + "/" + fname + ". Trying again.")  #f"Oh no! Hash test failed for {dstpath}/{fname}. Trying again.") # if data copy doesn't match original, try again
 			copyfile_local(fname, srcpath, dstpath, delete_choice)
 		else:
 			if delete_choice: # delete file from sd if user specified to
-				os.remove(f"{srcpath}/{fname}")
+				os.remove(srcpath + "/" + fname)  #f"{srcpath}/{fname}")
 
 
 def transfer_folder_contents(dst_path, sd_src_path, delete_choice): 
@@ -70,10 +70,10 @@ def transfer_folder_contents(dst_path, sd_src_path, delete_choice):
 		for file in files:
 			if not file.startswith("."): #ignore hidden files
 				# print(sd_src_path + '/' + file)
-				if os.path.isdir(f"{sd_src_path}/{file}"): #recursively copy nested folders
+				if os.path.isdir(sd_src_path + "/" + file  )#f"{sd_src_path}/{file}"): #recursively copy nested folders
 					# print(str(file) + ' is a directory.')
-					local_subpath = f"{dst_path}/{str(file)}"
-					sd_subpath = f"{sd_src_path}/{str(file)}"
+					local_subpath = dst_path + "/" + str(file)  #f"{dst_path}/{str(file)}"
+					sd_subpath = sd_src_path + "/" + str(file) #f"{sd_src_path}/{str(file)}"
 					transfer_folder_contents(local_subpath, sd_subpath, delete_choice)#, local)
 				else: # bottom of the line. Copy file
 					copyfile_local(file, sd_src_path, dst_path, delete_choice)
@@ -97,7 +97,7 @@ def get_disks(sd_prefix, sd_mount):
 	disks = os.listdir(path=sd_mount) # SD cards mount to /Volumes on Mac
 	matching_disks = [disk for disk in disks if disk.startswith(tuple(sd_prefix))]
 	if args.local or args.globus:
-		print(f"     Transferring files from {len(matching_disks)} disks:\n")
+		print("     Transferring files from " + len(matching_disks) + " disks:\n")#f"     Transferring files from {len(matching_disks)} disks:\n")
 	return matching_disks 	
 
 
@@ -108,11 +108,11 @@ def local_transfer(sd_prefix, sd_mount, local_path, delete_choice, reformat_choi
 	# Transfer contents of all matching disks
 	for disk in matching_disks:
 		folder_name = str(disk)# + current_date)
-		sd_fullpath = f"{sd_mount}/{disk}"
+		sd_fullpath = sd_mount + "/" + disk #f"{sd_mount}/{disk}"
 		local_fullpath = os.path.join(local_path, folder_name)
 
 		transfer_folder_contents(local_fullpath, sd_fullpath, delete_choice)
-		print(f"          Files from {disk} copied to {local_fullpath}.")
+		print("          Files from " + disk + " copied to " + local_fullpath + ".") #f"          Files from {disk} copied to {local_fullpath}.")
 	
 	if reformat_choice:
 		reformat_SDs_FAT32(matching_disks, sd_mount)
@@ -152,7 +152,7 @@ def globus_upload(sd_p, sd_mount, upload_dir, delete_choice, reformat_choice):
 	tc = globus_sdk.TransferClient(authorizer=authorizer)
 	tdata = globus_sdk.TransferData(tc, MYENDPOINT_ID, DTN_ID, label="", sync_level="checksum",preserve_timestamp=True,verify_checksum=True)
 
-	upload_dir = f"~/{upload_dir}"
+	upload_dir = "~/" + upload_dir  #f"~/{upload_dir}"
 
 	tc.operation_mkdir(DTN_ID, path=upload_dir) # new directory in ~/ibwo for each SD
 	# you will error out if you specified a directory that already exists
@@ -162,17 +162,17 @@ def globus_upload(sd_p, sd_mount, upload_dir, delete_choice, reformat_choice):
 
         # Upload contents of all matching disks
 	for d in matching_disks:
-		new_folder = f"{upload_dir}/{str(disk)}"
-		sd_fullpath = f"{sd_mount}/{disk}"
+		new_folder = upload_dir + "/" + str(disk)  #f"{upload_dir}/{str(disk)}"
+		sd_fullpath = sd_mount + "/" + disk    #f"{sd_mount}/{disk}"
 		tc.operation_mkdir(DTN_ID, path=new_folder) # new directory in indicated directory for each SD
 
 		files = os.listdir(path=sd_fullpath)
 		for file in files:
 			if not file.startswith("."): #ignore hidden files
-				if os.path.isdir(f"{sd_fullpath}/{file}"): #recursively copy nested folders
-					tdata.add_item(f"{sd_fullpath}/{file}", f"{new_folder}/{file}", recursive=True)
+				if os.path.isdir(sd_fullpath + "/" + file)  #f"{sd_fullpath}/{file}"): #recursively copy nested folders
+					tdata.add_item( sd_fullpath + "/" + file, new_folder + "/" + file, recursive=True)  #f"{sd_fullpath}/{file}", f"{new_folder}/{file}", recursive=True)
 				else:
-					tdata.add_item(f"{sd_fullpath}/{file}", f"{new_folder}/{file}") # copy from SD to new Globus dir
+					tdata.add_item(sd_fullpath + "/" + file, new_folder + "/" + file)   #f"{sd_fullpath}/{file}", f"{new_folder}/{file}") # copy from SD to new Globus dir
 
 	transfer_result = tc.submit_transfer(tdata)
 	print("Globus task_id =", transfer_result["task_id"])
@@ -189,7 +189,7 @@ def reformat_SDs_FAT32(sd_prefix, sd_mount):
 	filename = "SDlist.txt"
 
 	for i in range(len(sd_prefix)):
-		cmd = f"diskutil list | grep {sd_prefix[i]} > {cwd}/{filename}"
+		cmd = "diskutil list | grep " + sd_prefix[i] + " > " + cwd + "/" + filename #f"diskutil list | grep {sd_prefix[i]} > {cwd}/{filename}"
 		subprocess.call(cmd,shell=True) # get disk info for mounted SDs with specified prefix using diskutil
 
 		if os.stat(filename).st_size != 0: # trying to read an empty file will throw an error
@@ -200,13 +200,13 @@ def reformat_SDs_FAT32(sd_prefix, sd_mount):
 			names = lst["name"].values
 
 			for i in range(len(disks)): # reformat cards to clean FAT32 with original names
-				cmd = f"diskutil eraseDisk FAT32 {names[i]} MBRFormat /dev/{disks[i][0:-2]}" # 'diskutil list' actually saves name like "disk2s2", so strip off last two characters
+				cmd =  "diskutil eraseDisk FAT32 " + names[i] + " MBRFormat /dev/" + disks[i][0:-2]  #f"diskutil eraseDisk FAT32 {names[i]} MBRFormat /dev/{disks[i][0:-2]}" # 'diskutil list' actually saves name like "disk2s2", so strip off last two characters
 				subprocess.call(cmd, shell=True)
 				if not args.unmount:
-					cmd = f"diskutil mountDisk /dev/{disks[i][0:-2]}"
+					cmd = "diskutil mountDisk /dev/" + disks[i][0:-2]   #f"diskutil mountDisk /dev/{disks[i][0:-2]}"
 					subprocess.call(cmd,shell=True)
 				print("---")
-	cmd = f"rm {cwd}/{filename}"
+	cmd = "rm " + cwd + "/" + filename  #f"rm {cwd}/{filename}"
 	subprocess.call(cmd,shell=True) # delete SD reference file when done
 	if args.unmount:
 		matching_disks = get_disks(sd_prefix, sd_mount)
@@ -234,7 +234,7 @@ args = parser.parse_args()
 
 print("     SD prefix(es): ")
 for i in args.prefix:
-	print(f"        {i}")
+	print("        " + i)#f"        {i}")
 print("     SD mount path: " + args.mountPath)
 
 # Print delete & reformatting message - make sure they're serious about deleting data off cards
@@ -278,13 +278,13 @@ if args.reformat:
 
 # Initiate local transfer
 if args.local:
-	print(f"     Saving to local directory: {args.local}")
+	print("     Saving to local directory: " + args.local)#f"     Saving to local directory: {args.local}")
 	local_transfer(args.prefix, args.mountPath, args.local, args.delete, args.reformat, args.unmount)
 
 # Initiate Globus transfer
 if args.globus:
 	local = 0
-	print(f"     Uploading to directory {args.globus} on Globus.")
+	print("     Uploading to directory " + args.globus + " on Globus.")#f"     Uploading to directory {args.globus} on Globus.")
 	tmp = input('\n     Please confirm (Y/N) that you want to begin a Globus transfer, and have already updated the python script to include your Globus IDs (see README)\n     >>> ')
 	if tmp == "Y" or tmp == "y":
 		globus_upload(args.prefix, args.mountPath, args.globus, args.delete, args.reformat)
@@ -299,7 +299,7 @@ if donemsg:
 	if not local:
 		print("\n     Globus transfer initiated.\n")
 	if args.local:
-		print(f"\n     Done with local transfer! Executed in {str(time.time()-start)} seconds\n")
+		print("\n     Done with local transfer! Executed in " +  {str(time.time()-start)} + " seconds\n") #f"\n     Done with local transfer! Executed in {str(time.time()-start)} seconds\n")
 	if args.reformat:
 		print("\n     Done with reformatting!\n")
 
