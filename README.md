@@ -1,23 +1,27 @@
 # sd-transfer.py
 Trieste Devlin, the Kitzes Lab, University of Pittsburgh
-Last update: 06-17-2019
+Last update: 06-24-2019
 
 # About
 
-This script finds all SD cards named with a specified list of 1+ prefixes (ours are all called 'MSD-001', 'MSD-002, etc), and copy all files contained to the local or Globus cloud destination of your choice. The contents of each drive is placed in its own folder with file structure and original write times maintained in the copies. A checksum is performed on each file to confirm successful transfer. There is the option to simply delete files from the cards, delete and reformat the cards, and/or unmount cards after successsful transfer (if transferring). To reformat cards without any data transfer, simply use the -r flag without -l or -g.
+This script finds all SD cards named with a specified list of 1+ prefixes (ours are all called 'MSD-001', 'MSD-002, etc), and copy all files contained to the local or Globus cloud destination of your choice. The contents of each drive is placed in its own folder with file structure and original write times maintained in the copies. A checksum is performed on each file to confirm successful transfer. A user may choose to do any combination of the available operations: copy data, delete data from cards, reformat cards, and unmount cards.
 
 # Installation and Basic Info:
 
-On the Github webpage for this script, copy the git URL using the green *Clone or Download* button. Then, in Terminal, navigate to the location in your filesystem where you'd like the script to be saved and run ```git clone \[paste URL\]```. If you get a git error along the lines of *"The command-line developer tools need to be installed"*, follow the instructions printed with that error to get the tools installed on your computer. Once the download is complete, navigate into the folder that was just created (```cd sd-transfer```), then you can run the script by running the command ```python sd-transfer.py ..``` with the flags and arguments indicating what exactly you want it to do and where you want the data to be saved. In the **Usage** section below, optional inputs are shown in brackets - but you need to at least specify a prefix so the program knows what cards to read from and either a local or Globus transfer flag with a destination folder name (```-l [name]``` or ```-g```). See the **Examples** section below for specific commands to run for various results. Run ```python sd-transfer.py -h``` to get a printout of the **Usage** section to the terminal as a reminder.
+If you're not familiar with navigating your filesystem and running simple commands in the Terminal, [this tutorial](https://www.macworld.com/article/2042378/master-the-command-line-navigating-files-and-folders.html) gives a good, quick overview.
 
-Local usage is as simple as running as specified below with the ```-l [folder-name]``` flag. If the folder you include doesn't exist yet, it will be created. If you just include a folder name, it'll be created in the current directory. If you include a path and a name, you can specify the location of where to save the data on your computer (ie ```-l /Users/[you]/Desktop/[folder-name]```). Note: the command ```pwd``` will print the full path of your current directory in the terminal. See below for Globus setup details, as there are a few changes you need to make in the python code to get synced up with your account. Note that this code is designed for use on Mac - some changes are necessary to run on another OS. Hope this is useful!
+On the Github webpage for this script, copy the git URL using the green *Clone or Download* button. Then, in Terminal, navigate to the location in your filesystem where you'd like the script to be saved and run ```git clone \[paste URL\]```. If you get a git error along the lines of *"The command-line developer tools need to be installed"*, follow the instructions printed with that error to get the tools installed on your computer.
+
+Once the download is complete, you can delete everything other than the ```dist``` directory, if you want - it is a self-contained executable copy of the code and all dependencies needed to make it run. To run the code, you need to navigate a few levels deep into the folder that was just created (```cd sd-transfer/dist/SD-tool```). Now you can run the script with the command ```./SD-tool ...``` with the flags and arguments indicating what exactly you want it to do and where you want the data to be saved. Flags to use to specify the different options are outlined in the **Usage** section below. Optional inputs are shown in brackets - but you need to at least specify a prefix so the program knows what cards to read from and either a local or Globus transfer flag with a destination folder name (```-l [name]``` or ```-g```) OR either the delete or reformat flag (```-d``` or ```-r```, indicating that you want to delete/reformat files without copying them anywhere). See the **Examples** section below for specific commands to run for various results. Run ```./SD-tool/SD-tool -h``` to get a printout of the **Usage** section to the terminal as a reminder.
+
+Local usage is as simple as running as specified below with the ```-l [folder-name]``` flag. If the folder you include doesn't exist yet, it will be created. If you just include a folder name, it'll be created in the current directory. If you include a path in front of the name, you can specify the location of where to save the data on your computer (ie ```-l /Users/[you]/Desktop/[folder-name]```). Note: the command ```pwd``` will print the full path of your current directory in the Terminal. See below for Globus setup details, as there are a few changes you need to make in the Python code to get synced up with your account. Note that this code is designed for use on Mac - some changes are necessary to run on another OS. Hope this is useful!
 
 Right now, the script isn't able to handle folder names containing spaces (filenames with spaces are ok though). This will be fixed very soon.
 
 
 # Usage
 ```
-python sd-transfer.py [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] -l LOCAL
+./SD-tool/SD-tool [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] -l LOCAL
                       [-g GLOBUS] [-d] [-r] [-u] [-y]
 
 Transfer files from SD card(s) to local storage or Globus cloud storage,
@@ -57,18 +61,21 @@ Arguments:
 
 # Examples
 ```
-python sd-transfer.py -p MSD -l ~/Desktop/SD_folder -d 
+./SD-tool/SD-tool -p MSD -l ~/Desktop/SD_folder -d 
      # Copy the contents of SD cards with names prefixed by "MSD" to "SD_folder" on your Desktop, then delete files from SDs after asking for delete confirmation.
 
-python sd-transfer.py -p MSD -l ~/Desktop/SD_folder -r -y -u   
+./SD-tool/SD-tool -p MSD -l ~/Desktop/SD_folder -r -y -u   
      # Same as above, but erase and reformat cards when finished (skip confirmation), then unmount.
 
-python sd-transfer.py -p fieldData -r -u -y
+./SD-tool/SD-tool -p fieldData -r -u -y
      # Erase and reformat SD cards with names prefixed by "fieldData" (skip confirmation). Don't save any data, but keep the card names as they were. Unmount when finished.
 
-python sd-transfer.py -p SD BobsData -g fieldData/sdTransfer
+./SD-tool/SD-tool -p SD BobsData -g fieldData/sdTransfer
      # Copy the contents of SD cards with names prefixed by "SD" or "BobsData" to the folder "fieldData/sdTransfer" in your
      # Globus Personal Endpoint filesystem, leaving the contents of the SD cards alone
+     
+./SD-tool/SD-tool -r
+     # Reformat cards without any data transfer.
 ```
 
 
