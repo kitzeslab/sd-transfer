@@ -12,7 +12,7 @@ If you're not familiar with navigating your filesystem and running simple comman
 
 On the Github webpage for this script, copy the git URL using the green *Clone or Download* button. Then, in Terminal, navigate to the location in your filesystem where you'd like the script to be saved and run ```git clone \[paste URL\]```. If you get a git error along the lines of *"The command-line developer tools need to be installed"*, follow the instructions printed with that error to get the tools installed on your computer.
 
-Once the download is complete, you can delete everything other than the ```dist``` directory, if you want - it is a self-contained executable copy of the code and all dependencies needed to make it run. To run the code, you need to navigate a few levels deep into the folder that was just created (```cd sd-transfer/dist/SD-tool```). Now you can run the script with the command ```./SD-tool ...``` with the flags and arguments indicating what exactly you want it to do and where you want the data to be saved. Flags to use to specify the different options are outlined in the **Usage** section below. Optional inputs are shown in brackets - but you need to at least specify a prefix so the program knows what cards to read from and either a local or Globus transfer flag with a destination folder name (```-l [name]``` or ```-g```) OR either the delete or reformat flag (```-d``` or ```-r```, indicating that you want to delete/reformat files without copying them anywhere). See the **Examples** section below for specific commands to run for various results. Run ```./SD-tool/SD-tool -h``` to get a printout of the **Usage** section to the terminal as a reminder.
+Once the download is complete, you can delete everything other than the ```dist``` directory, if you want - it is a self-contained executable copy of the code and all dependencies needed to make it run. To run the code, you need to navigate a few levels deep into the folder that was just created (```cd sd-transfer/dist/SD-tool```). Now you can run the script with the command ```./SD-tool ...``` with the flags and arguments indicating what exactly you want it to do and where you want the data to be saved. Flags to use to specify the different options are outlined in the **Usage** section below. Optional inputs are shown in brackets - but you need to at least specify a prefix so the program knows what cards to read from and either a local or Globus transfer flag with a destination folder name (```-l [name]``` or ```-g```) OR either the delete or reformat flag (```-d``` or ```-r```, indicating that you want to delete/reformat files without copying them anywhere). See the **Examples** section below for specific commands to run for various results. Run ```./SD-tool -h``` to get a printout of the **Usage** section to the terminal as a reminder.
 
 Local usage is as simple as running as specified below with the ```-l [folder-name]``` flag. If the folder you include doesn't exist yet, it will be created. If you just include a folder name, it'll be created in the current directory. If you include a path in front of the name, you can specify the location of where to save the data on your computer (ie ```-l /Users/[you]/Desktop/[folder-name]```). Note: the command ```pwd``` will print the full path of your current directory in the Terminal. See below for Globus setup details, as there are a few changes you need to make in the Python code to get synced up with your account. Note that this code is designed for use on Mac - some changes are necessary to run on another OS. Hope this is useful!
 
@@ -21,7 +21,7 @@ Right now, the script isn't able to handle folder names containing spaces (filen
 
 # Usage
 ```
-./SD-tool/SD-tool [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] -l LOCAL
+./SD-tool [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] -l LOCAL
                       [-g GLOBUS] [-d] [-r] [-u] [-y]
 
 Transfer files from SD card(s) to local storage or Globus cloud storage,
@@ -41,16 +41,15 @@ Arguments:
                         [Required for local transfer]
   -g GLOBUS, --globus GLOBUS
                         New directory name (with absolute path) in your Globus
-                        filesystem to upload data to.[Required for local
+                        filesystem to upload data to. [Required for local
                         Globus transfer]
   -d, --delete          Delete files from SD cards after transfer and
                         confirmation are complete. Files are only deleted if
                         this flag is included. [Optional]
   -r, --reformat        Reformat SD card to FAT32, maintaining its name.
                         WARNING: all data will be deleted during reformat,
-                        even if you didn't specify the -d flag (defaults to
-                        not reformat). To reformat but not transfer any data,
-                        use -l 0 -g 0 -r. [Optional]
+                        even if you didn't specify the -d flag. To reformat
+                        but not transfer any data, use -l 0 -g 0 -r. [Optional]
   -u, --unmount         Unmount SD cards from your computer after done with
                         local copy or reformat. Don't use this for Globus
                         upload! [Optional]
@@ -61,24 +60,19 @@ Arguments:
 
 # Examples
 ```
-./SD-tool/SD-tool -p MSD -l ~/Desktop/SD_folder -d 
+./SD-tool -p MSD -l ~/Desktop/SD_folder -d 
      # Copy the contents of SD cards with names prefixed by "MSD" to "SD_folder" on your Desktop, then delete files from SDs after asking for delete confirmation.
 
-./SD-tool/SD-tool -p MSD -l ~/Desktop/SD_folder -r -y -u   
+./SD-tool -p MSD -l ~/Desktop/SD_folder -r -y -u   
      # Same as above, but erase and reformat cards when finished (skip confirmation), then unmount.
 
-./SD-tool/SD-tool -p fieldData -r -u -y
+./SD-tool -p fieldData -r -u -y
      # Erase and reformat SD cards with names prefixed by "fieldData" (skip confirmation). Don't save any data, but keep the card names as they were. Unmount when finished.
 
-./SD-tool/SD-tool -p SD BobsData -g fieldData/sdTransfer
+./SD-tool -p SD BobsData -g fieldData/sdTransfer
      # Copy the contents of SD cards with names prefixed by "SD" or "BobsData" to the folder "fieldData/sdTransfer" in your
-     # Globus Personal Endpoint filesystem, leaving the contents of the SD cards alone
-     
-./SD-tool/SD-tool -r
-     # Reformat cards without any data transfer.
+     # Globus Personal Endpoint filesystem, leaving the contents of the SD cards alone.
 ```
-
-
 
 # Globus Setup:
 
