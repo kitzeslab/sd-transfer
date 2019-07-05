@@ -1,6 +1,8 @@
 # sd-transfer.py
+
 Trieste Devlin, the Kitzes Lab, University of Pittsburgh
-Last update: 06-24-2019
+
+Last update: 2019-07-02
 
 # About
 
