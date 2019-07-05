@@ -23,7 +23,7 @@ Right now, the script isn't able to handle folder names containing spaces (filen
 
 # Usage
 ```
-./sd-transfer [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] -l LOCAL
+./SD-tool [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] -l LOCAL
                       [-g GLOBUS] [-d] [-r] [-u] [-y]
 
 Transfer files from SD card(s) to local storage or Globus cloud storage,
@@ -62,16 +62,16 @@ Arguments:
 
 # Examples
 ```
-./sd-transfer.py -p MSD -l ~/Desktop/SD_folder -d 
+./SD-tool -p MSD -l ~/Desktop/SD_folder -d 
      # Copy the contents of SD cards with names prefixed by "MSD" to "SD_folder" on your Desktop, then delete files from SDs after asking for delete confirmation.
 
-./sd-transfer.py -p MSD -l ~/Desktop/SD_folder -r -y -u   
+./SD-tool -p MSD -l ~/Desktop/SD_folder -r -y -u   
      # Same as above, but erase and reformat cards when finished (skip confirmation), then unmount.
 
-./sd-transfer.py -p fieldData -r -u -y
+./SD-tool -p fieldData -r -u -y
      # Erase and reformat SD cards with names prefixed by "fieldData" (skip confirmation). Don't save any data, but keep the card names as they were. Unmount when finished.
 
-./sd-transfer.py -p SD BobsData -g fieldData/sdTransfer
+./SD-tool -p SD BobsData -g fieldData/sdTransfer
      # Copy the contents of SD cards with names prefixed by "SD" or "BobsData" to the folder "fieldData/sdTransfer" in your
      # Globus Personal Endpoint filesystem, leaving the contents of the SD cards alone.
 ```
