@@ -4,7 +4,7 @@ Last update: 06-24-2019
 
 # About
 
-This script finds all SD cards named with a specified list of 1+ prefixes (ours are all called 'MSD-001', 'MSD-002, etc), and copy all files contained to the local or Globus cloud destination of your choice. The contents of each drive is placed in its own folder with file structure and original write times maintained in the copies. A checksum is performed on each file to confirm successful transfer. A user may choose to do any combination of the available operations: copy data, delete data from cards, reformat cards, and unmount cards.
+This script finds all SD cards named with a specified list of 1+ prefixes (ours are all called `MSD-0001`, `MSD-0002`, etc), and copy all files contained to the local or Globus cloud destination of your choice. The contents of each drive is placed in its own folder with file structure and original write times maintained in the copies. A checksum is performed on each file to confirm successful transfer. A user may choose to do any combination of the available operations: copy data, delete data from cards, reformat cards, and unmount cards.
 
 # Installation and Basic Info:
 
@@ -21,7 +21,7 @@ Right now, the script isn't able to handle folder names containing spaces (filen
 
 # Usage
 ```
-./SD-tool [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] -l LOCAL
+./sd-transfer [-h] -p PREFIX [PREFIX ...] [-m MOUNTPATH] -l LOCAL
                       [-g GLOBUS] [-d] [-r] [-u] [-y]
 
 Transfer files from SD card(s) to local storage or Globus cloud storage,
@@ -60,16 +60,16 @@ Arguments:
 
 # Examples
 ```
-./SD-tool -p MSD -l ~/Desktop/SD_folder -d 
+./sd-transfer.py -p MSD -l ~/Desktop/SD_folder -d 
      # Copy the contents of SD cards with names prefixed by "MSD" to "SD_folder" on your Desktop, then delete files from SDs after asking for delete confirmation.
 
-./SD-tool -p MSD -l ~/Desktop/SD_folder -r -y -u   
+./sd-transfer.py -p MSD -l ~/Desktop/SD_folder -r -y -u   
      # Same as above, but erase and reformat cards when finished (skip confirmation), then unmount.
 
-./SD-tool -p fieldData -r -u -y
+./sd-transfer.py -p fieldData -r -u -y
      # Erase and reformat SD cards with names prefixed by "fieldData" (skip confirmation). Don't save any data, but keep the card names as they were. Unmount when finished.
 
-./SD-tool -p SD BobsData -g fieldData/sdTransfer
+./sd-transfer.py -p SD BobsData -g fieldData/sdTransfer
      # Copy the contents of SD cards with names prefixed by "SD" or "BobsData" to the folder "fieldData/sdTransfer" in your
      # Globus Personal Endpoint filesystem, leaving the contents of the SD cards alone.
 ```
